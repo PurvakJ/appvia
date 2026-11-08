@@ -2,42 +2,73 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+
+    <!-- Browser UI colour (matches the site's navy) -->
+    <meta name="theme-color" content="#102732" />
+
+    <!-- Icons and manifest (files live in /public) -->
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+    <!-- Fonts: connect early so Montserrat loads faster -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Search engines -->
+    <title>AppVia | Business Operations App Solutions</title>
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="AppVia builds custom Mini ERP and business operations apps for small and medium businesses: inventory, CRM, billing, attendance, orders and dashboards. Based in Ludhiana, Punjab, India."
     />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
+    <meta
+      name="keywords"
+      content="Mini ERP, business app, custom software, inventory management, billing software, CRM, Ludhiana, Punjab, India, AppVia"
+    />
+    <meta name="author" content="AppVia" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://appvia.in/" />
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
+    <!-- Link previews (WhatsApp, LinkedIn, Facebook) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AppVia" />
+    <meta property="og:title" content="AppVia | Smarter Tools. Stronger Business." />
+    <meta
+      property="og:description"
+      content="Custom business operations apps that automate routine tasks, organize your data and help your company grow."
+    />
+    <meta property="og:url" content="https://appvia.in/" />
+    <meta property="og:image" content="https://appvia.in/appvia-poster.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Structured data so Google can show your business details -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ProfessionalService",
+        "name": "AppVia",
+        "description": "Custom Mini ERP and business operations app solutions for small and medium businesses.",
+        "url": "https://appvia.in/",
+        "email": "vikrant@appvia.in",
+        "telephone": "+919901920560",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Ludhiana",
+          "addressRegion": "Punjab",
+          "addressCountry": "IN"
+        }
+      }
+    </script>
+
+    <style>
+      /* Shown for a moment before React loads, so the page never flashes white */
+      html, body { margin: 0; background: #102732; }
+      #root:empty { min-height: 100vh; }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
   </body>
 </html>
