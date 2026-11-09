@@ -328,7 +328,6 @@ html { scrollbar-width: thin; scrollbar-color: var(--teal) var(--mist); }
 .comp td:nth-child(2) { background: rgba(5, 110, 127, .06); font-weight: 600; color: var(--teal-dark); }
 .comp td:nth-child(3) { color: var(--muted); }
 .comp .sec td { background: var(--mist); color: var(--navy); font-weight: 700; font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; }
-.comp tr:hover td:not([colspan]), .comp tr:hover th { background-color: rgba(5, 110, 127, .04); }
 .fade-bottom { position: absolute; left: 0; right: 0; bottom: 74px; height: 120px; background: linear-gradient(transparent, #fff); pointer-events: none; transition: opacity .3s; border-radius: 0 0 var(--r-card) var(--r-card); }
 .full.pale .fade-bottom { background: linear-gradient(transparent, var(--pale)); }
 .fade-bottom.off { opacity: 0; }
@@ -588,3 +587,13 @@ input[type='range']::-moz-range-thumb { width: 18px; height: 18px; border-radius
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* ───────────── comparison table ───────────── */
+.comp-scroll { overflow: hidden; border-radius: var(--r-card); border: 1px solid var(--line); box-shadow: var(--shadow); background: #fff; }
+.comp-clip { max-height: none; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; transition: max-height .6s var(--ease); }
+.comp-clip.collapsed { max-height: 500px; }
+.comp { width: 100%; border-collapse: collapse; min-width: 640px; }
+
+/* hover only on body rows; header, section rows and the "Your own app" column keep their colours */
+.comp tbody tr:not(.sec):hover th,
+.comp tbody tr:not(.sec):hover td:nth-child(3) { background-color: rgba(5, 110, 127, .04); }
