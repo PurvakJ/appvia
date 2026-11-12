@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { HashRouter, Routes, Route, NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
 import './App.css';
 
 /* ───────────── config (edit these) ───────────── */
@@ -11,7 +11,12 @@ const CLOUD = {
 // Paste your deployed Apps Script Web App URL (ends with /exec)
 const API_URL = process.env.REACT_APP_API_URL || 'https://script.google.com/macros/s/AKfycbx5oHe1gQRvH2ysIg0sOaisaFAbWLe-cliGwItVNge8LkiQcs6-6oJD8DLk2KB6YLXQ/exec';
 
+// Site logo (hosted on Cloudinary). Replace this link to change the logo.
+const LOGO = 'https://res.cloudinary.com/dm9gg8yss/image/upload/v1794469700/Unknown_uobnxv.png';
+
 // Save your poster image as  public/appvia-poster.jpg  and it appears on the home page.
+// Base path for the router (empty in dev; strips any domain if PUBLIC_URL is a full URL)
+const BASE = (process.env.PUBLIC_URL || '').replace(/^https?:\/\/[^/]+/, '') || '/';
 const POSTER = `${process.env.PUBLIC_URL || ''}/appvia-poster.jpg`;
 
 /*
@@ -31,8 +36,8 @@ const PHOTOS = {
 };
 
 const SITE = {
-  name: 'AppVia | Business Operations App Solutions',
-  short: 'AppVia',
+  name: 'GanpatiApps | Business Operations App Solutions',
+  short: 'GanpatiApps',
   tagline: 'Smarter Tools. Stronger Business.',
   person: 'Vikrant Garg',
   email: 'vikrant@appvia.in',
@@ -56,7 +61,7 @@ const INDUSTRIES = [
   ['🚚', 'Logistics & Transport'], ['🏠', 'Real Estate'], ['🍽️', 'Hotels & Restaurants'], ['🥛', 'Dairy & Agriculture'], ['💼', 'Agencies & Services'],
 ];
 
-// From the AppVia poster: what our Mini ERP solutions do
+// From the GanpatiApps poster: what our Mini ERP solutions do
 const MINI_ERP = [
   { icon: '▤', t: 'Record Transactions', d: 'Stay on top of your finances' },
   { icon: '◔', t: 'Calculate Business Metrics', d: 'Track growth and performance' },
@@ -124,6 +129,19 @@ const FAQS = [
   ['What does it cost?', 'It depends on scope. Our plans start at a small single-purpose app and scale up. You get a fixed price in writing before we begin.'],
   ['Do you work with businesses outside Ludhiana?', 'Yes. We work with customers across India and abroad over calls and screen-sharing, and visit in person where it helps.'],
 ];
+
+// Page titles shown in the browser tab (the router now uses clean URLs)
+const TITLES = {
+  '/': SITE.name,
+  '/about': `About | ${SITE.short}`,
+  '/services': `Services | ${SITE.short}`,
+  '/works': `Our Works | ${SITE.short}`,
+  '/reviews': `Reviews | ${SITE.short}`,
+  '/contact': `Contact | ${SITE.short}`,
+  '/privacy': `Privacy Policy | ${SITE.short}`,
+  '/terms': `Terms & Conditions | ${SITE.short}`,
+  '/admin': `Admin | ${SITE.short}`,
+};
 
 /* ───────────── API + Cloudinary ───────────── */
 // Apps Script web apps don't answer CORS preflight, so POST uses text/plain.
@@ -605,7 +623,7 @@ function PosterImg() {
   if (failed) return null;
   return (
     <div className="poster-wrap">
-      <img src={POSTER} alt="AppVia: Business Operations Made Easy with Mini ERP solutions" loading="lazy" onError={() => setFailed(true)} />
+      <img src={POSTER} alt="GanpatiApps: Business Operations Made Easy with Mini ERP solutions" loading="lazy" onError={() => setFailed(true)} />
     </div>
   );
 }
@@ -629,7 +647,12 @@ function Header() {
   return (
     <header className={`site-header ${solid ? 'solid' : ''}`}>
       <Link to="/" className="brand" aria-label={SITE.name}>
-        <span className="logo"><i /><i /><i /></span>
+        <img
+          className="logo-img"
+          src={optimise(LOGO, 160)}
+          alt=""
+          style={{ height: 40, width: 'auto', display: 'block', objectFit: 'contain' }}
+        />
         <span><b>{SITE.short}</b><small>Business Operations App Solutions</small></span>
       </Link>
       <button className="burger" onClick={() => setOpen(!open)} aria-expanded={open} aria-label="Menu"><span /><span /></button>
@@ -646,6 +669,12 @@ function Footer() {
     <footer className="site-footer">
       <div className="foot-grid">
         <div>
+          <img
+            className="logo-img"
+            src={optimise(LOGO, 160)}
+            alt={SITE.short}
+            style={{ height: 44, width: 'auto', display: 'block', objectFit: 'contain', marginBottom: 12 }}
+          />
           <strong className="foot-brand">{SITE.name}</strong>
           <p>Automate. Organize. Grow.<br />{SITE.tagline}</p>
         </div>
@@ -675,9 +704,13 @@ function Footer() {
   );
 }
 
+// Scrolls to top on every page change and sets the browser tab title
 function ScrollTop() {
   const { pathname } = useLocation();
-  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    document.title = TITLES[pathname] || SITE.name;
+  }, [pathname]);
   return null;
 }
 
@@ -689,6 +722,33 @@ function BackToTop() {
     return () => window.removeEventListener('scroll', on);
   }, []);
   return <button className={`back-top ${show ? 'show' : ''}`} aria-label="Back to top" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>↑</button>;
+}
+
+// Thin gradient bar at the very top showing how far down the page you are
+function ScrollProgress() {
+  const [p, setP] = useState(0);
+  useEffect(() => {
+    const on = () => {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      setP(h > 0 ? Math.min(window.scrollY / h, 1) : 0);
+    };
+    on();
+    window.addEventListener('scroll', on, { passive: true });
+    window.addEventListener('resize', on);
+    return () => { window.removeEventListener('scroll', on); window.removeEventListener('resize', on); };
+  }, []);
+  return <div className="progress" style={{ transform: `scaleX(${p})` }} aria-hidden="true" />;
+}
+
+// Floating WhatsApp shortcut (hidden on the admin page)
+function WhatsAppFloat() {
+  const { pathname } = useLocation();
+  if (pathname === '/admin') return null;
+  return (
+    <a className="wa-float" href={`https://wa.me/${SITE.whatsapp}`} target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 4C9.4 4 4 9.1 4 15.4c0 2.3.7 4.4 2 6.2L4.4 28l6.6-1.8c1.500.8 3.200 1.200 5 1.200 6.600 0 12-5.100 12-11.400S22.600 4 16 4z" /><path fill="#fff" d="M12 11h8a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-5l-3 2.500V18a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1z" /></svg>
+    </a>
+  );
 }
 
 function HotKey() {
@@ -933,7 +993,8 @@ function Home() {
         <div className="orbs" aria-hidden="true"><i /><i /><i /><i /><i /><i /></div>
         <HeroScape />
         <div className="hero-copy">
-          <p className="hero-kicker">Mini ERP and business apps built around how you work</p>
+          <span className="hero-badge"><i className="dot" /> Mini ERP &amp; business apps · Made in Ludhiana</span>
+          <p className="hero-kicker">Built around how you work, not the other way round</p>
           <h1>
             Smarter tools.
             <span>Stronger business.</span>
@@ -943,6 +1004,11 @@ function Home() {
             <Link className="btn primary" to="/contact">Start a project</Link>
             <Link className="btn ghost" to="/works">See our work</Link>
           </div>
+          <ul className="hero-proof">
+            <li><b>3–6 weeks</b><span>to launch a focused app</span></li>
+            <li><b>Fixed price</b><span>quoted in writing</span></li>
+            <li><b>No lock-in</b><span>your data stays yours</span></li>
+          </ul>
         </div>
         <div className="hero-art">
           <div className="glass dash">
@@ -1068,7 +1134,7 @@ function About() {
   const after = ['Orders flow into one shared app', 'Stock updates itself on every sale', 'Automatic reminders for dues', 'Live dashboards any time', 'Every process documented in the system'];
   return (
     <>
-      <PageHead title="We make everyday business work lighter" sub="AppVia builds simple, dependable software for growing companies." bg={PHOTOS.team} />
+      <PageHead title="We make everyday business work lighter" sub="GanpatiApps builds simple, dependable software for growing companies." bg={PHOTOS.team} />
       <section className="section narrow">
         <Reveal>
           <p className="prose-lg">Most businesses run on a patchwork of spreadsheets, chat groups and memory. It works until it doesn’t. We replace that patchwork with one organized app: orders, staff, stock, payments and reports in one place, designed around your process rather than a generic template.</p>
@@ -1356,7 +1422,7 @@ function Contact() {
       <PageHead title="Let’s talk about your business" sub="Share a few details and we’ll suggest the simplest way to get started." bg={PHOTOS.office} />
       <section className="section split">
         <div className="info">
-          <Reveal><Photo src={PHOTOS.team} scene="contact" alt="Talk to the AppVia team" badge="We reply within one working day" /></Reveal>
+          <Reveal><Photo src={PHOTOS.team} scene="contact" alt="Talk to the GanpatiApps team" badge="We reply within one working day" /></Reveal>
           <div className="card info-card"><span>Contact person</span><strong>{SITE.person}</strong></div>
           <a className="card info-card" href={`mailto:${SITE.email}`}><span>Email</span><strong>{SITE.email}</strong></a>
           <a className="card info-card" href={`tel:${SITE.phone.replace(/\s/g, '')}`}><span>Phone</span><strong>{SITE.phone}</strong></a>
@@ -1688,7 +1754,9 @@ function NotFound() {
 export default function App() {
   return (
     <Boundary>
-    <HashRouter>
+    {/* BrowserRouter gives clean URLs: /about, /services … and plain / for home */}
+    <BrowserRouter basename={BASE}>
+      <ScrollProgress />
       <ScrollTop />
       <HotKey />
       <Header />
@@ -1709,8 +1777,9 @@ export default function App() {
         </Boundary>
       </main>
       <Footer />
+      <WhatsAppFloat />
       <BackToTop />
-    </HashRouter>
+    </BrowserRouter>
     </Boundary>
   );
 }
